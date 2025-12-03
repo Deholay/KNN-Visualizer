@@ -1,6 +1,7 @@
 # KNN Visualizer
 
-**This Project is co-work with Cursor**
+* **This Project is co-work with Cursor**
+* [Deployed Link](https://deholay.github.io/KNN-Visualizer/)
 
 ![desktop.png](desktop.png)
 
