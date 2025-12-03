@@ -1,97 +1,119 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KNN Visualizer</title>
-    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/checkbox.css" />
   </head>
   <body>
-    <div id="info-container" class="info-container">
-      <div id="info-prediction" class="info">
-        <div class="prediction-container">
-          <span>Prediction: </span>
-          <span id="prediction">?</span>
+    <!-- Upload Screen -->
+    <div id="upload-screen">
+      <div class="upload-container">
+        <h1>KNN Visualizer</h1>
+        <p class="subtitle">Upload a CSV file to start visualization</p>
+        <div class="upload-area" id="upload-area">
+          <input type="file" id="csv-file-input" accept=".csv" />
+          <div class="upload-icon">📄</div>
+          <p>Click or drag CSV file here</p>
+          <p class="hint">Format: feature1, feature2, ..., label</p>
         </div>
-      </div>
-      <div id="info-background" class="info" style="gap: 20px">
-        <span>Background quality: </span>
-        <div class="checkbox">
-          <input type="checkbox" name="high-quality" value="3" />
-          <label for="high-quality" style="margin-top: 1px">High</label>
-        </div>
-        <div class="checkbox">
-          <input type="checkbox" name="medium-quality" value="10" checked />
-          <label for="medium-quality" style="margin-top: 1px">Medium</label>
-        </div>
-        <div class="checkbox">
-          <input type="checkbox" name="low-quality" value="50" />
-          <label for="low-quality" style="margin-top: 1px">Low</label>
-        </div>
-      </div>
-      <div class="info">
-        <span>K: </span>
-        <span id="k-number">2</span>
-      </div>
-      <div class="info" style="gap: 20px">
-        <span>Number of points: </span>
-        <div class="checkbox">
-          <input type="checkbox" name="high-number" value="100" />
-          <label for="high-number" style="margin-top: 1px">100</label>
-        </div>
-        <div class="checkbox">
-          <input type="checkbox" name="medium-number" value="50" checked />
-          <label for="medium-number" style="margin-top: 1px">50</label>
-        </div>
-        <div class="checkbox">
-          <input type="checkbox" name="low-number" value="10" />
-          <label for="low-number" style="margin-top: 1px">10</label>
-        </div>
-      </div>
-      <div class="info" style="gap: 20px">
-        <span>Number of classes: </span>
-        <div class="checkbox">
-          <input type="checkbox" name="2-class" value="2" />
-          <label for="2-class" style="margin-top: 1px">2</label>
-        </div>
-        <div class="checkbox">
-          <input type="checkbox" name="3-class" value="3" checked />
-          <label for="3-class" style="margin-top: 1px">3</label>
-        </div>
-        <div class="checkbox">
-          <input type="checkbox" name="4-class" value="4" />
-          <label for="4-class" style="margin-top: 1px">4</label>
-        </div>
-        <div class="checkbox">
-          <input type="checkbox" name="5-class" value="5" />
-          <label for="5-class" style="margin-top: 1px">5</label>
-        </div>
-      </div>
-      <div class="info">
-        <div class="checkbox">
-          <input id="show-background" type="checkbox" name="show-background" />
-          <label for="show-background" style="margin-top: 1px"
-            >Show background</label
-          >
-        </div>
-      </div>
-      <div class="info" id="hide" style="display: none">
-        <img src="svg/hide.svg" alt="hide" class="svg" />
-      </div>
-      <div class="info" id="show" style="display: none">
-        <img src="svg/show.svg" alt="show" class="svg" />
-      </div>
-      <div class="info" id="reload">
-        <img src="svg/reload.svg" alt="Reload" class="svg" />
       </div>
     </div>
-    <div class="info" id="loading" style="gap: 10px">
-      <span>Loading </span>
-      <img src="svg/loading.svg" alt="Loading..." class="svg" />
+
+    <!-- Main Screen -->
+    <div id="main-screen" style="display: none">
+      <div id="info-container" class="info-container">
+        <!-- File Info -->
+        <div class="panel">
+          <div class="panel-title">File</div>
+          <div class="panel-content">
+            <span id="file-name">No file loaded</span>
+          </div>
+        </div>
+
+        <!-- Prediction -->
+        <div class="panel">
+          <div class="panel-title">Prediction</div>
+          <div class="panel-content">
+            <span id="prediction">?</span>
+          </div>
+        </div>
+
+        <!-- K Value -->
+        <div class="panel">
+          <div class="panel-title">K Value</div>
+          <div class="panel-content">
+            <span id="k-number">3</span>
+          </div>
+        </div>
+
+        <!-- Axis Selection -->
+        <div class="panel">
+          <div class="panel-title">Axis</div>
+          <div class="panel-content vertical">
+            <div class="select-row">
+              <label>X:</label>
+              <select id="x-axis-select" class="axis-select"></select>
+            </div>
+            <div class="select-row">
+              <label>Y:</label>
+              <select id="y-axis-select" class="axis-select"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Class Filter -->
+        <div class="panel">
+          <div class="panel-title">Classes</div>
+          <div class="panel-content vertical" id="class-checkboxes"></div>
+        </div>
+
+        <!-- Background Options -->
+        <div class="panel">
+          <div class="panel-title">Background</div>
+          <div class="panel-content vertical">
+            <div class="checkbox-row">
+              <input id="show-background" type="checkbox" />
+              <label for="show-background">Show regions</label>
+            </div>
+            <div class="quality-group">
+              <span>Quality:</span>
+              <div class="checkbox-row">
+                <input type="checkbox" name="high-quality" id="q-high" value="3" />
+                <label for="q-high">High</label>
+              </div>
+              <div class="checkbox-row">
+                <input type="checkbox" name="medium-quality" id="q-mid" value="10" checked />
+                <label for="q-mid">Medium</label>
+              </div>
+              <div class="checkbox-row">
+                <input type="checkbox" name="low-quality" id="q-low" value="50" />
+                <label for="q-low">Low</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Side Controls -->
+      <div id="right-controls">
+        <button class="btn" id="reload-csv">Load New File</button>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div id="loading">
+        <span>Loading...</span>
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Canvas -->
+      <canvas id="canvas"></canvas>
     </div>
-    <canvas id="canvas"></canvas>
+
     <script src="index.js"></script>
   </body>
 </html>

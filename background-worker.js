@@ -1,19 +1,40 @@
-const colorMap = {
-  red: [255, 0, 0, 255],
-  blue: [0, 0, 255, 255],
-  orange: [255, 165, 0, 255],
-  green: [0, 128, 0, 255],
-  purple: [128, 0, 128, 255],
+// Default color map (fallback) – used only if main thread doesn't send one
+const defaultColorMap = {
+  "1": [231, 76, 60, 255],   // red
+  "2": [52, 152, 219, 255],  // blue
+  "3": [241, 196, 15, 255],  // yellow
 };
 
 self.onmessage = function (e) {
-  const { points, k, accuracy, width, height } = e.data;
+  const { points, k, accuracy, width, height, colorMap } = e.data;
+
+  // Use provided color map or default
+  const colors = colorMap || defaultColorMap;
+
   const imageData = new ImageData(width, height);
   const data = imageData.data;
 
+  // Background color (dark gray)
+  const bgColor = [26, 26, 26, 255];
+
+  // If no points, fill with background color
+  if (!points || points.length === 0) {
+    for (let i = 0; i < data.length; i += 4) {
+      data.set(bgColor, i);
+    }
+    self.postMessage(
+      {
+        type: "imageData",
+        imageData: imageData,
+      },
+      [imageData.data.buffer]
+    );
+    return;
+  }
+
   for (let x = 0; x < width; x += accuracy) {
     for (let y = 0; y < height; y += accuracy) {
-      // KNN
+      // KNN calculation
       const distances = points.map((p) => ({
         category: p.category,
         dist: Math.hypot(p.x - x, p.y - y),
@@ -31,7 +52,10 @@ self.onmessage = function (e) {
         ([, a], [, b]) => b - a
       )[0][0];
 
-      const rgba = colorMap[prediction];
+      // Get predicted class color
+      const rgba = colors[prediction] || bgColor;
+
+      // Fill pixel block
       for (let dx = 0; dx < accuracy; dx++) {
         for (let dy = 0; dy < accuracy; dy++) {
           const px = x + dx;
